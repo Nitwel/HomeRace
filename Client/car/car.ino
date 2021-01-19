@@ -1,10 +1,17 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
+#include <Servo.h>
+#include <Regexp.h>
  
 const char* SSID = "FRITZ!Box 7362 SL";
 const char* PSK = "86619567583490915352";
 const char* MQTT_BROKER = "192.168.0.47";
- 
+
+int FORWARD_WHEEL = D0;
+int BACKWARD_WHEEL = D1;
+int STEERING = D2;
+
+Servo myservo;
 WiFiClient espClient;
 PubSubClient client(espClient);
 long lastMsg = 0;
@@ -12,11 +19,14 @@ char msg[50];
 int value = 0;
  
 void setup() {
-    pinMode(13, OUTPUT);
+    pinMode(FORWARD_WHEEL, OUTPUT);
+    pinMode(BACKWARD_WHEEL, OUTPUT);
+    
     Serial.begin(115200);
     setup_wifi();
     client.setServer(MQTT_BROKER, 1883);
     client.setCallback(callback);
+    myservo.attach(STEERING);
 }
  
 void setup_wifi() {
@@ -51,9 +61,36 @@ void callback(char* topic, byte* payload, unsigned int length) {
  
     msg[length] = '\0';
     Serial.println(msg);
- 
-    if(strcmp(msg,"ping")==0){
-        client.publish("/home/data", "pong");
+
+    MatchState ms;
+    ms.Target(msg);
+    if(char result = ms.Match("ping") == REGEXP_MATCHED){
+      client.publish("/home/data", "pong");
+    }
+
+    if(ms.Match("stop") == REGEXP_MATCHED){
+      Serial.println("stopping");
+      digitalWrite(FORWARD_WHEEL,LOW);
+      digitalWrite(BACKWARD_WHEEL,LOW);
+    }
+
+    if(char result = ms.Match("forward") == REGEXP_MATCHED){
+      Serial.println("Going forward");
+      digitalWrite(FORWARD_WHEEL,HIGH);
+      digitalWrite(BACKWARD_WHEEL,LOW);
+    }
+
+    if(char result = ms.Match("backward") == REGEXP_MATCHED){
+      Serial.println("Going backward");
+      digitalWrite(FORWARD_WHEEL,LOW);
+      digitalWrite(BACKWARD_WHEEL,HIGH);
+    }
+
+    if(char result = ms.Match("left (%d%d%d)") == REGEXP_MATCHED){
+      Serial.println("Going backward");
+      int degree = String(ms.GetCapture(msg, 0)).toInt();
+      Serial.println(degree);
+      myservo.write(degree);
     }
 }
  
