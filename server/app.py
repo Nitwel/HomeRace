@@ -21,7 +21,9 @@ def ping(sid, data):
     print('message ', data)
     return 'pong'
 
-@sio.on('')
+@sio.on('drive')
+def drive(sid, data):
+    print(data)
 
 if __name__ == '__main__':
     if(len(sys.argv) > 1 and sys.argv[1] == 'dev'):

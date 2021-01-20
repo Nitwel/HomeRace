@@ -1,0 +1,10 @@
+{
+    "name": "HomeRace",
+    "short_name": "HomeRace",
+    "start_url": "/",
+    "display": "fullscreen",
+    "orientation": "landscape",
+    "background_color" : "#fff" ,
+    "description": "HomeRace app.",
+    "icons": []
+  }

@@ -19,7 +19,8 @@ class MQTT:
         print("Connected with result code "+str(rc))
         client.subscribe("/carts")
 
-    def on_message(self, client, userdata, [topic, payload]):
+    def on_message(self, client, userdata, data):
+        [topic, payload] = data
         print(topic+" "+str(payload))
 
         message = str(payload)

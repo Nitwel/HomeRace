@@ -1,48 +1,76 @@
 <template>
     <div class="race">
-        <div class="joystick" @mouseenter="mouseenter" @mouseleave="mouseleave">
-            <div class="joystick-moveable"></div>
+        <div class="joystick" ref="joystickBox">
+            <div class="joystick-moveable"  ref="joystick"></div>
         </div>
     </div>
 </template>
 
 <script lang="ts">
-import { onBeforeUnmount } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 
 export default {
     setup() {
+        const joystick = ref<HTMLElement | null>(null)
+        const joystickBox = ref<HTMLElement | null>(null)
+        const offset = ref<DOMRect | null>(null)
+        const joystickRadius = ref(60)
 
-        function mouseenter() {
-            console.log("enter")
+        function updateButton(touch: Touch) {
+            if(offset.value != null && joystick.value != null) {
+
+                let x = touch.pageX - offset.value.left - offset.value.width / 2
+                let y = touch.pageY - offset.value.top - offset.value.height / 2
+                const d = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))
+
+                if( d > joystickRadius.value) {
+                    const angle = Math.atan2(y, x)
+                    x = Math.cos(angle) * joystickRadius.value
+                    y = Math.sin(angle) * joystickRadius.value
+                }
+                joystick.value.style.transform = `translate(${x - offset.value.width / 2}px, ${y - offset.value.height / 2}px)`
+            }
         }
 
-        function mouseleave() {
-            console.log("leave")
+        function touchstart(event: TouchEvent) {
+            const touch = event.touches[0]
+            updateButton(touch)
         }
 
-        function mousedown() {
-            console.log("down")
+        function touchend(event: TouchEvent) {
+            if(offset.value != null && joystick.value != null) {
+                const x = -offset.value.width / 2
+                const y = -offset.value.height / 2
+                joystick.value.style.transform = `translate(${ x }px, ${ y }px)`
+            }
         }
 
-        function mouseup() {
-            console.log("up")
+        function touchmove(event: TouchEvent) {
+            const touch = event.touches[0]
+            updateButton(touch)
+            
+            
         }
 
-        function mousemove() {
-            console.log("move")
-        }
-
-        document.addEventListener('touchstart', mousedown)
-        document.addEventListener('touchend', mouseup)
-        document.addEventListener('touchmove', mousemove)
-        
-        onBeforeUnmount(() => {
-            document.removeEventListener('touchstart', mousedown)
-            document.removeEventListener('touchend', mouseup)
-            document.removeEventListener('touchmove', mousemove)
+        onMounted(() => {
+            if(joystick.value != null && joystickBox.value != null) {
+                joystickBox.value.style.width = joystickRadius.value * 2 + 'px'
+                joystickBox.value.style.height = joystickRadius.value * 2 + 'px'
+                offset.value = joystick.value.getBoundingClientRect()
+            }
         })
 
-        return {mouseenter, mouseleave}
+        document.addEventListener('touchstart', touchstart)
+        document.addEventListener('touchend', touchend)
+        document.addEventListener('touchmove', touchmove)
+        
+        onBeforeUnmount(() => {
+            document.removeEventListener('touchstart', touchstart)
+            document.removeEventListener('touchend', touchend)
+            document.removeEventListener('touchmove', touchmove)
+        })
+
+        return {joystick, joystickBox, joystickRadius}
     }
 }
 </script>
@@ -55,10 +83,8 @@ export default {
 
     .joystick {
         position: absolute;
-        bottom: 60px;
-        left: 60px;
-        width: 200px;
-        height: 200px;
+        bottom: 30px;
+        left: 30px;
         background-color: var(--gray);
         border-radius: 50%;
 

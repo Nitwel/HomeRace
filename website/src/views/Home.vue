@@ -3,6 +3,7 @@
     <span class="title">{{ $t('home-race') }}</span>
     <v-input v-model="text" placeholder=""/>
     <v-button @click="send">Send</v-button>
+    <router-link to="/race">Race</router-link>
   </div>
 </template>
 

@@ -14,6 +14,7 @@
 
 body {
   margin: 0;
+  z-index: 1;
 }
 
 #app {
@@ -22,5 +23,15 @@ body {
   height: 100vh;
   overflow: hidden;
   font-family: 'Roboto', sans-serif;
+  z-index: 2;
+}
+
+body, #app {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
 }
 </style>
