@@ -10,6 +10,7 @@ const char* MQTT_BROKER = "192.168.0.47";
 int FORWARD_WHEEL = D0;
 int BACKWARD_WHEEL = D1;
 int STEERING = D2;
+int SPEED_WHEEL = D3;
 
 Servo myservo;
 WiFiClient espClient;
@@ -52,6 +53,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
     Serial.print("Received message [");
     Serial.print(topic);
     Serial.print("] ");
+    
     char msg[length+1];
     for (int i = 0; i < length; i++) {
         Serial.print((char)payload[i]);
@@ -60,7 +62,34 @@ void callback(char* topic, byte* payload, unsigned int length) {
     Serial.println();
  
     msg[length] = '\0';
-    Serial.println(msg);
+
+    if(strcmp(topic, "/drive") == 0) {
+      Serial.println("Driving");
+      signed char speed = msg[0];
+      signed char direction = msg[1];
+
+      int speed_real = speed / 100.0 * 255;
+      int degree = (((int) -direction) + 100) / 201.0 * 180;
+
+      Serial.println(speed_real);
+
+      if(speed > 0) {
+        digitalWrite(FORWARD_WHEEL,HIGH);
+        digitalWrite(BACKWARD_WHEEL,LOW);
+        analogWrite(SPEED_WHEEL, speed_real);
+      } else if(speed == 0) {
+        digitalWrite(FORWARD_WHEEL,LOW);
+        digitalWrite(BACKWARD_WHEEL,LOW);
+        analogWrite(SPEED_WHEEL, 0);
+        
+      } else {
+        digitalWrite(FORWARD_WHEEL,LOW);
+        digitalWrite(BACKWARD_WHEEL,HIGH);
+        analogWrite(SPEED_WHEEL, -speed_real);
+      }
+      myservo.write(degree);
+      
+    }
 
     MatchState ms;
     ms.Target(msg);
@@ -105,6 +134,8 @@ void reconnect() {
         }
     }
     client.subscribe("/home/data");
+    client.subscribe("/drive");
+    
     Serial.println("MQTT Connected...");
 }
  

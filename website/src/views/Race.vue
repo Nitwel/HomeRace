@@ -8,6 +8,7 @@
 
 <script lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { socket } from '@/main'
 
 export default {
     setup() {
@@ -29,6 +30,11 @@ export default {
                     y = Math.sin(angle) * joystickRadius.value
                 }
                 joystick.value.style.transform = `translate(${x - offset.value.width / 2}px, ${y - offset.value.height / 2}px)`
+
+                const speed = Math.round(Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)) / joystickRadius.value * (y > 0 ? -100 : 100))
+                const direction = Math.round(x / 80 * 100)
+
+                socket.emit('drive', Int8Array.of(speed, direction))
             }
         }
 
@@ -43,6 +49,7 @@ export default {
                 const y = -offset.value.height / 2
                 joystick.value.style.transform = `translate(${ x }px, ${ y }px)`
             }
+            socket.emit('drive', Int8Array.of(0, 0))
         }
 
         function touchmove(event: TouchEvent) {

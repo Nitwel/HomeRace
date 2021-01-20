@@ -9,7 +9,7 @@ app = socketio.WSGIApp(sio, static_files={
     '/': {'content_type': 'text/html', 'filename': 'index.html'}
 })
 
-#mqtt = MQTT()
+mqtt = MQTT()
 
 @sio.event
 def connect(sid, environ):
@@ -24,6 +24,7 @@ def ping(sid, data):
 @sio.on('drive')
 def drive(sid, data):
     print(data)
+    mqtt.drive(data)
 
 if __name__ == '__main__':
     if(len(sys.argv) > 1 and sys.argv[1] == 'dev'):

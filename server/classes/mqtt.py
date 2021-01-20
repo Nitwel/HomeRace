@@ -41,3 +41,6 @@ class MQTT:
         self.client.publish('/carts', 'hey')
         await asyncio.sleep(1)
         return self.cartIps
+
+    def drive(self, data):
+        self.client.publish('/drive', data)
