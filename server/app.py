@@ -2,7 +2,7 @@ import eventlet
 import socketio
 import sys
 
-# from mqtt import MQTT
+from classes.mqtt import MQTT
 
 sio = socketio.Server(cors_allowed_origins="*")
 app = socketio.WSGIApp(sio, static_files={
@@ -20,6 +20,8 @@ def connect(sid, environ):
 def ping(sid, data):
     print('message ', data)
     return 'pong'
+
+@sio.on('')
 
 if __name__ == '__main__':
     if(len(sys.argv) > 1 and sys.argv[1] == 'dev'):
