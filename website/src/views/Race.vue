@@ -3,6 +3,7 @@
         <div class="joystick" ref="joystickBox">
             <div class="joystick-moveable"  ref="joystick"></div>
         </div>
+        <img id="image" ref="image"/>
     </div>
 </template>
 
@@ -14,6 +15,7 @@ export default {
     setup() {
         const joystick = ref<HTMLElement | null>(null)
         const joystickBox = ref<HTMLElement | null>(null)
+        const image = ref<HTMLImageElement | null>(null)
         const offset = ref<DOMRect | null>(null)
         const joystickRadius = ref(60)
 
@@ -59,6 +61,11 @@ export default {
             
         }
 
+        socket.on('image', (data: any) => {
+            if (image.value != null)
+                image.value.src = "data:image/jpeg;base64," + data
+        })
+
         onMounted(() => {
             if(joystick.value != null && joystickBox.value != null) {
                 joystickBox.value.style.width = joystickRadius.value * 2 + 'px'
@@ -77,7 +84,7 @@ export default {
             document.removeEventListener('touchmove', touchmove)
         })
 
-        return {joystick, joystickBox, joystickRadius}
+        return {joystick, joystickBox, joystickRadius, image}
     }
 }
 </script>
@@ -87,6 +94,11 @@ export default {
     width: 100%;
     height: 100%;
     position: relative;
+
+    #image {
+        width: 100%;
+        height: 100%;
+    }
 
     .joystick {
         position: absolute;

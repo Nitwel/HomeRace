@@ -11,6 +11,11 @@ app = socketio.WSGIApp(sio, static_files={
 
 mqtt = MQTT()
 
+@sio.on('image')
+def image(sid, data):
+    sio.emit('image', data)
+    
+
 @sio.event
 def connect(sid, environ):
     print('connect ', sid)

@@ -9,21 +9,24 @@
 </template>
 
 <script lang="ts">
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref, watchEffect } from 'vue';
 import { socket } from '@/main'
 
 export default {
   setup() {
     const text = ref('')
     const connected = ref(false)
-    socket.on('error', () => {
-      console.log("Is Connected")
-      connected.value = true
-    })
 
     function send() {
       socket.emit('ping', text.value)
     }
+
+    socket.on('connect', () => {
+      console.log("connected", socket.connected)
+      connected.value = true
+    })
+
+    
 
     return {send, text, connected}
   }

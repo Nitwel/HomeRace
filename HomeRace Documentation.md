@@ -28,27 +28,28 @@ ended --> [*]
 
 | State                      | Message               | Response | Beschreibung |
 | -------------------------- | --------------------- | -------- | ------------ |
-| select                     | connect(String name)  | Race     |              |
+| select                     | connect()             | Race     |              |
+| select                     | disconnect()          |          |              |
 | select                     | set_cart(String name) | boolean  |              |
 | select -> ready / starting | ready()               |          |              |
 | ready                      | unready()             |          |              |
 | started                    | drive(Byte[2] drive)  |          |              |
 |                            |                       |          |              |
 |                            |                       |          |              |
-|                            |                       |          |              |
 
 ### Messages from the Server
 
-| State         | Message                            | Beschreibung                         |
-| ------------- | ---------------------------------- | ------------------------------------ |
-| select, ready | player_connected(Player player)    |                                      |
-| select, ready | player_disconnected(Player player) |                                      |
-| select, ready | player_ready(Player player)        |                                      |
-| select, ready | player_unready(Player player)      |                                      |
-| starting      | start_in(Integer timer)            | The countdown until the race starts. |
-| started       | started(Timestamp time)            | The race has begun.                  |
-| started       | lap_finished(Timestamp time)       |                                      |
-| started       | race_finished(Timestamp time)      |                                      |
+| State             | Message                            | Beschreibung                         |
+| ----------------- | ---------------------------------- | ------------------------------------ |
+| select, ready     | player_connected(Player player)    |                                      |
+| select, ready     | player_disconnected(Player player) |                                      |
+| select, ready     | player_ready(Player player)        |                                      |
+| select, ready     | player_unready(Player player)      |                                      |
+| starting          | start_in(Integer timer)            | The countdown until the race starts. |
+| started           | started(Timestamp time)            | The race has begun.                  |
+| started           | lap_finished(Timestamp time)       |                                      |
+| started           | race_finished(Timestamp time)      |                                      |
+| finished / select | leaderboard(List<Player> players)  |                                      |
 
 ### Cart drive encoding
 
@@ -95,9 +96,9 @@ class Player {
 
 ## MQTT Communication
 
-| Channel | Message | Description                                    |
-| ------- | ------- | ---------------------------------------------- |
-| /carts  | hey     | Search for all carts currently connected       |
-|         | ho[ip]  | Response of all currently connected carts (1s) |
-|         |         |                                                |
+| Channel      | Message | Description                                    |
+| ------------ | ------- | ---------------------------------------------- |
+| /carts       | hey     | Search for all carts currently connected       |
+|              | ho[ip]  | Response of all currently connected carts (1s) |
+| /cart/{name} | Byte[2] | Driving instructions to the cart               |
 

@@ -9,7 +9,7 @@ import {register} from '@/components/public/register'
 import { createI18n } from 'vue-i18n'
 import deDEBase from '@/lang/de-DE.json'
 
-export const socket = io('http://localhost:1992');
+export const socket = io('http://192.168.0.20:1992');
 
 export const i18n = createI18n({
     locale: 'de-DE',
