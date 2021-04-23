@@ -9,8 +9,8 @@ const char* MQTT_BROKER = "192.168.0.47";
 
 int FORWARD_WHEEL = D0;
 int BACKWARD_WHEEL = D1;
-int STEERING = D2;
-int SPEED_WHEEL = D3;
+int STEERING = D3;
+int SPEED_WHEEL = D2;
 
 Servo myservo;
 WiFiClient espClient;
@@ -22,6 +22,7 @@ int value = 0;
 void setup() {
     pinMode(FORWARD_WHEEL, OUTPUT);
     pinMode(BACKWARD_WHEEL, OUTPUT);
+    pinMode(SPEED_WHEEL, OUTPUT);
     
     Serial.begin(115200);
     setup_wifi();
@@ -68,23 +69,23 @@ void callback(char* topic, byte* payload, unsigned int length) {
       signed char speed = msg[0];
       signed char direction = msg[1];
 
-      int speed_real = speed / 100.0 * 255;
+      int speed_real = speed / 100.0 * 1023;
       int degree = (((int) -direction) + 100) / 201.0 * 180;
 
       Serial.println(speed_real);
 
-      if(speed > 0) {
-        digitalWrite(FORWARD_WHEEL,HIGH);
-        digitalWrite(BACKWARD_WHEEL,LOW);
+      if(speed_real > 0) {
+        digitalWrite(FORWARD_WHEEL, HIGH);
+        digitalWrite(BACKWARD_WHEEL, LOW);
         analogWrite(SPEED_WHEEL, speed_real);
-      } else if(speed == 0) {
-        digitalWrite(FORWARD_WHEEL,LOW);
-        digitalWrite(BACKWARD_WHEEL,LOW);
+      } else if(speed_real == 0) {
+        digitalWrite(FORWARD_WHEEL, LOW);
+        digitalWrite(BACKWARD_WHEEL, LOW);
         analogWrite(SPEED_WHEEL, 0);
         
       } else {
-        digitalWrite(FORWARD_WHEEL,LOW);
-        digitalWrite(BACKWARD_WHEEL,HIGH);
+        digitalWrite(FORWARD_WHEEL, LOW);
+        digitalWrite(BACKWARD_WHEEL, HIGH);
         analogWrite(SPEED_WHEEL, -speed_real);
       }
       myservo.write(degree);

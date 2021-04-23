@@ -1,9 +1,9 @@
 import pickle
 import struct
-import cv2
 import socketio
 import base64
 import time
+import cv2
 
 sio = socketio.Client()
 sio.connect('http://localhost:1992')
