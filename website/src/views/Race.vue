@@ -2,6 +2,7 @@
     <div class="race">
         <div class="joystick" ref="joystickBox">
             <div class="joystick-moveable"  ref="joystick"></div>
+            <div>{{fps}}</div>
         </div>
         <img id="image" ref="image"/>
     </div>
@@ -18,6 +19,14 @@ export default {
         const image = ref<HTMLImageElement | null>(null)
         const offset = ref<DOMRect | null>(null)
         const joystickRadius = ref(60)
+        const _fps = ref(0)
+        const fps = ref(0)
+
+        setInterval(() => {
+            fps.value = _fps.value
+            _fps.value = 0
+        }, 1000)
+
 
         function updateButton(touch: Touch) {
             if(offset.value != null && joystick.value != null) {
@@ -62,6 +71,8 @@ export default {
         }
 
         socket.on('image', (data: any) => {
+            // console.log(typeof data)
+            _fps.value += 1
             if (image.value != null)
                 image.value.src = "data:image/jpeg;base64," + data
         })
@@ -84,7 +95,7 @@ export default {
             document.removeEventListener('touchmove', touchmove)
         })
 
-        return {joystick, joystickBox, joystickRadius, image}
+        return {joystick, joystickBox, joystickRadius, image, fps}
     }
 }
 </script>
