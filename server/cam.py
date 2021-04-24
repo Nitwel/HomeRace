@@ -6,7 +6,7 @@ import time
 import cv2
 
 sio = socketio.Client()
-sio.connect('http://localhost:1992')
+sio.connect('http://192.168.0.47:1992')
 
 vid = cv2.VideoCapture(0)
 fps = 25

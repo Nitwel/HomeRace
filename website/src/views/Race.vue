@@ -11,6 +11,7 @@
 <script lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { socket } from '@/main'
+import lodash from 'lodash'
 
 export default {
     setup() {
@@ -26,7 +27,10 @@ export default {
             fps.value = _fps.value
             _fps.value = 0
         }, 1000)
-
+        
+        const send = lodash.throttle((speed: any, direction: any) => {
+            socket.emit('drive', Int8Array.of(speed, direction))
+        }, 100)
 
         function updateButton(touch: Touch) {
             if(offset.value != null && joystick.value != null) {
@@ -45,7 +49,7 @@ export default {
                 const speed = Math.round(Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)) / joystickRadius.value * (y > 0 ? -100 : 100))
                 const direction = Math.round(x / 80 * 100)
 
-                socket.emit('drive', Int8Array.of(speed, direction))
+                send(speed, direction)
             }
         }
 
