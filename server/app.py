@@ -14,12 +14,7 @@ mqtt = MQTT()
 @sio.on('image')
 def image(sid, data):
     sio.emit('image', data)
-
-@sio.on('image2')
-def image(sid, data):
-    sio.emit('image2', data)
     
-
 @sio.event
 def connect(sid, environ):
     print('connect ', sid)
