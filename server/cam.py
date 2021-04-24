@@ -31,6 +31,8 @@ while True:
     if final_sleep_time > 0:
         time.sleep(final_sleep_time)
 
+    frameTimes.append(final_sleep_time)
+
     frame += 1
 
     if frame >= 60:
