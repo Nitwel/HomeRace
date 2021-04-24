@@ -27,7 +27,8 @@ while True:
 
     diff_time = end_time - start_time
 
-    final_sleep_time = sleep_time - diff_time if diff_time <= sleep_time else 0
+    final_sleep_time = sleep_time - diff_time
+    
     if final_sleep_time > 0:
         time.sleep(final_sleep_time)
 
