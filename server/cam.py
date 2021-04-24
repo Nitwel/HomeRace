@@ -9,7 +9,7 @@ sio = socketio.Client()
 sio.connect('http://localhost:1992')
 
 vid = cv2.VideoCapture(0)
-fps = 30
+fps = 10
 sleep_time = 1.0 / fps
 
 frame = 0
@@ -35,7 +35,7 @@ while True:
 
     frame += 1
 
-    if frame >= 60:
+    if frame >= fps:
         print("Average Frametime: %s" % (sum(frameTimes) / len(frameTimes)))
         frame = 0
         frameTimes = []
